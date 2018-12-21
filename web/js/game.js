@@ -19,7 +19,7 @@ var robot_count_block = document.querySelector('.robot-count-content');
 
 // --- Static values @TODO: Should it stay as is or in a new json file ?
 // Costs using robots (first robot type)
-var costs = {"factory_0": 10000, "factory_1": 100, "factory_2": 500, "factory_3": 5000,
+var costs = {"factory_0": 10000, "factory_1": 300, "factory_2": 1500, "factory_3": 5000,
              "upgrade_robot": 10, "upgrade_next_robot": 3000};
 // Number of robots per factory level
 var factor_factory_level = {"factory_-1": 0, "factory_0": 0, "factory_1": 1, "factory_2": 5, "factory_3": 10};
@@ -195,12 +195,12 @@ function pay_robot(level) {
  *
  */
 function auto_build() {
-    Game.robot_count += parseFloat(Game.build_sec_factories/10 * (1+Game.robot_upgrade_level*0.75) * Game.robot_factor_build);
+    Game.robot_count += parseFloat(Game.build_sec_factories/1000 * (1+Game.robot_upgrade_level*0.75) * Game.robot_factor_build);
     update_clicker();
 }
 
 update_build_sec_factories(); // Init the rps
-setInterval(auto_build, 100); // auto build every 100 ms
+setInterval(auto_build, 1); // auto build every 100 ms
 setInterval(affordable, 2000); // check affordable stuff but not every 100 ms ...
 
 
@@ -235,8 +235,8 @@ document.querySelectorAll('.town .slot').forEach( function (slot) {
 // Upgrade level robots
 document.querySelector('.upgrade-robot-level').addEventListener('click', function () {
     if (can_afford_upgrade(Game.robot_level+1)) {
-        Game.robot_level++;
         pay_robot(Game.robot_level);
+        Game.robot_level++;
         update_robot_details();
     }
 });
@@ -246,5 +246,6 @@ document.querySelector('.upgrade-next-robot').addEventListener('click', function
     if (can_afford_next_robot(Game.robot_upgrade_level+1)) {
         pay_upgrade_next_robot(Game.robot_upgrade_level + 1);
         Game.robot_upgrade_level++;
+        update_robot_details();
     }
 });
