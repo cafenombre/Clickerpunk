@@ -52,7 +52,7 @@
     <div class="improvements">
         <ul>
             <li class="upgrade-robot-level">Upgrade robot level</li>
-            <li>Upgrade to next robot</li>
+            <li class="upgrade-next-robot">Upgrade to next robot</li>
         </ul>
     </div>
 </section>

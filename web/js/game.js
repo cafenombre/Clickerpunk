@@ -12,13 +12,15 @@ Game.build_sec_factories = 1;
 Game.slots = {"slot_1": 1};
 Game.number_factories = 100;
 Game.robot_level = 1;
+Game.robot_upgrade_level = 1;
 
 // Keep the block in a global var to save memory
 var robot_count_block = document.querySelector('.robot-count-content');
 
 // --- Static values @TODO: Should it stay as is or in a new json file ?
 // Costs using robots (first robot type)
-var costs = {"factory_0": 10000, "factory_1": 100, "factory_2": 500, "factory_3": 5000, "upgrade_robot": 10};
+var costs = {"factory_0": 10000, "factory_1": 100, "factory_2": 500, "factory_3": 5000,
+             "upgrade_robot": 10, "upgrade_next_robot": 3000};
 // Number of robots per factory level
 var factor_factory_level = {"factory_-1": 0, "factory_0": 0, "factory_1": 1, "factory_2": 5, "factory_3": 10};
 
@@ -78,12 +80,22 @@ function affordable() {
         table.style.border = '1px solid #ccc';
     });
     for (var i=0; i<4; i++) {
-        console.log(price_factory(i));
         if (Game.robot_count >= price_factory(i))
             document.querySelectorAll('.town table[data-level="'+(i-1)+'"]').forEach(function (table) {
                 table.style.border = '1px solid yellow';
             });
     }
+
+    // Robot upgrades
+    document.querySelectorAll('.improvements li').forEach(function (li) {
+        li.style.color = 'black';
+    });
+
+    if (can_afford_upgrade(Game.robot_level+1))
+        document.querySelector('.upgrade-robot-level').style.color = 'orange';
+
+    if (can_afford_next_robot(Game.robot_upgrade_level+1))
+        document.querySelector('.upgrade-next-robot').style.color = 'orange';
 }
 
 /**
@@ -102,7 +114,7 @@ function price_factory(type) {
 
     count_f = (count_f === 0) ? 1:count_f;
 
-    return costs['factory_'+type] * count_f;
+    return Math.pow(costs['factory_'+type] * count_f, 1.1);
 }
 
 /**
@@ -125,6 +137,11 @@ function can_afford_upgrade(level) {
     return (Game.robot_count >= costs['upgrade_robot']*level*0.8)
 }
 
+// @TODO: doc
+function can_afford_next_robot(level) {
+    return (Game.robot_count >= Math.pow(costs['upgrade_next_robot']*level*3, 1.3))
+}
+
 /**
  * Check if the user can upgrade a factory
  *
@@ -144,11 +161,15 @@ function can_evolve_factory(slot, lvlRequest) {
  * @param request  the factory level
  */
 function pay_factory(request) {
-    console.log(price_factory(request)+' / '+Game.robot_count);
-    if (price_factory(request) <= Game.robot_count) {
+    if (price_factory(request) <= Game.robot_count)
         Game.robot_count = Game.robot_count-price_factory(request);
-        console.log(price_factory(request)+' / '+Game.robot_count);
-    }
+    update_clicker();
+    affordable();
+}
+
+function pay_upgrade_next_robot(request) {
+    if (Math.pow(costs['upgrade_next_robot']*request*3, 1.3) <= Game.robot_count)
+        Game.robot_count = Game.robot_count-Math.pow(costs['upgrade_next_robot']*request*3, 1.3);
     update_clicker();
     affordable();
 }
@@ -173,7 +194,7 @@ function pay_robot(level) {
  *
  */
 function auto_build() {
-    Game.robot_count += parseFloat(Game.build_sec_factories/10 * Game.robot_factor_build);
+    Game.robot_count += parseFloat(Game.build_sec_factories/10 * (1+Game.robot_upgrade_level*0.75) * Game.robot_factor_build);
     update_clicker();
 }
 
@@ -210,12 +231,20 @@ document.querySelectorAll('.town .slot').forEach( function (slot) {
    })
 });
 
-// Upgrade robots
+// Upgrade level robots
 document.querySelector('.upgrade-robot-level').addEventListener('click', function () {
     console.log(can_afford_upgrade(Game.robot_level+1));
     if (can_afford_upgrade(Game.robot_level+1)) {
         Game.robot_level++;
         pay_robot(Game.robot_level);
         update_robot_details();
+    }
+});
+
+// Upgrade robots
+document.querySelector('.upgrade-next-robot').addEventListener('click', function () {
+    if (can_afford_next_robot(Game.robot_upgrade_level+1)) {
+        pay_upgrade_next_robot(Game.robot_upgrade_level + 1);
+        Game.robot_upgrade_level++;
     }
 });
