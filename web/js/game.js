@@ -144,8 +144,11 @@ function can_evolve_factory(slot, lvlRequest) {
  * @param request  the factory level
  */
 function pay_factory(request) {
-    if (price_factory(request) <= Game.robot_count)
+    console.log(price_factory(request)+' / '+Game.robot_count);
+    if (price_factory(request) <= Game.robot_count) {
         Game.robot_count = Game.robot_count-price_factory(request);
+        console.log(price_factory(request)+' / '+Game.robot_count);
+    }
     update_clicker();
     affordable();
 }
@@ -193,14 +196,14 @@ document.querySelectorAll('.town .slot').forEach( function (slot) {
         var number_slot = slot.getAttribute('data-slot');
         if (!Game.slots.hasOwnProperty(number_slot))
             Game.slots[number_slot] = -1;
-        console.log(Game.slots);
+
         var request_slot = Game.slots[number_slot]+1;
 
         if (can_evolve_factory(number_slot, request_slot)) {
             if (can_afford_factory(request_slot)) {
-                Game.slots[number_slot]++;
+                pay_factory(request_slot); // The price of the factory depend on the slots: pay before !
                 slot.setAttribute('data-level', request_slot);
-                pay_factory(request_slot);
+                Game.slots[number_slot]++;
                 update_factories();
             }
         }
