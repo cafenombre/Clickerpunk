@@ -48,6 +48,7 @@
 <section class="section-options">
     <div class="robot-definition">
         <p>Robot level: <span class="robot-level-content">1</span></p>
+        <p>Robot type: <span class="robot-type-content">1</span></p>
     </div>
     <div class="improvements">
         <ul>

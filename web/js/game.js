@@ -67,6 +67,7 @@ function update_factories() {
  */
 function update_robot_details() {
     document.querySelector('.robot-level-content').innerHTML = Game.robot_level;
+    document.querySelector('.robot-type-content').innerHTML = Game.robot_upgrade_level;
 }
 
 /**
@@ -233,7 +234,6 @@ document.querySelectorAll('.town .slot').forEach( function (slot) {
 
 // Upgrade level robots
 document.querySelector('.upgrade-robot-level').addEventListener('click', function () {
-    console.log(can_afford_upgrade(Game.robot_level+1));
     if (can_afford_upgrade(Game.robot_level+1)) {
         Game.robot_level++;
         pay_robot(Game.robot_level);
