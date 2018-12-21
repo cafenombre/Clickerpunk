@@ -84,7 +84,8 @@ function affordable() {
     document.querySelectorAll('.town table').forEach(function (table) {
         table.style.border = '1px solid #ccc';
     });
-    for (var i=0; i<3; i++) {
+    for (var i=0; i<4; i++) {
+        console.log(price_factory(i));
         if (Game.robot_count >= price_factory(i))
             document.querySelectorAll('.town table[data-level="'+(i-1)+'"]').forEach(function (table) {
                 table.style.border = '1px solid yellow';
