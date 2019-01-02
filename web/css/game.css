@@ -1,5 +1,14 @@
 * {
-    font-family: Lato;
+    font-family: Lato, Arial;
+    user-select: none;
+}
+html, body {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none;
+    user-select: none;
 }
 header {
     text-align: center;
@@ -14,13 +23,14 @@ header .main-click {
     user-select: none;
 }
 
-table {
+
+tr, td {
+    border: 1px solid #ccc;
     border-collapse: collapse;
+}
+table {
     display: inline-block;
     margin: 30px;
-}
-table, tr, td {
-    border: 1px solid #ccc;
 }
 td {
     width: 10px;

@@ -6,7 +6,7 @@
 
 // Init the different game variables
 var Game = {};
-Game.robot_count = 0;
+Game.robot_count = 10000;
 Game.robot_factor_build = 1;
 Game.build_sec_factories = 1;
 Game.slots = {"slot_1": 1};
@@ -54,7 +54,7 @@ function update_factories() {
 
     for (var slot in Game.slots) {
         for (var i=0; i<=Game.slots[slot]; i++) {
-            document.querySelectorAll('table[data-slot=' + slot + '] .slot_cell_'+i).forEach(function (cell) {
+            document.querySelectorAll('table[data-slot="' + slot + '"] .slot_cell_'+i).forEach(function (cell) {
                 cell.style.background = '#ccc';
             });
         }
@@ -78,13 +78,17 @@ function update_robot_details() {
 function affordable() {
     // Slots
     document.querySelectorAll('.town table').forEach(function (table) {
-        table.style.border = '1px solid #ccc';
+        table.style.border = '';
     });
-    for (var i=0; i<4; i++) {
-        if (Game.robot_count >= price_factory(i))
-            document.querySelectorAll('.town table[data-level="'+(i-1)+'"]').forEach(function (table) {
+    for (let i=0; i<4; i++) {
+        if (Game.robot_count >= price_factory(i)) {
+            console.log(price_factory(i));
+            console.log(document.querySelectorAll('.town table[data-level="' + (i - 1) + '"]').length);
+            document.querySelectorAll('.town table[data-level="' + (i - 1) + '"]').forEach(function (table) {
+                console.log(table);
                 table.style.border = '1px solid yellow';
             });
+        }
     }
 
     // Robot upgrades
@@ -170,7 +174,7 @@ function pay_factory(request) {
 
 function pay_upgrade_next_robot(request) {
     if (Math.pow(costs['upgrade_next_robot']*request*3, 1.3) <= Game.robot_count)
-        Game.robot_count = Game.robot_count-Math.pow(costs['upgrade_next_robot']*request*3, 1.3);
+        Game.robot_count = Game.robot_count-Math.pow(costs['upgrade_next_robot']*request, 1.2);
     update_clicker();
     affordable();
 }
@@ -200,8 +204,8 @@ function auto_build() {
 }
 
 update_build_sec_factories(); // Init the rps
-setInterval(auto_build, 1); // auto build every 100 ms
-setInterval(affordable, 2000); // check affordable stuff but not every 100 ms ...
+setInterval(auto_build, 10); // auto build every 1 ms
+setInterval(affordable, 2000); // check affordable stuff but not every 1 ms ...
 
 
 // --- EVENTS
