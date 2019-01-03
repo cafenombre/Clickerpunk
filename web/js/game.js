@@ -6,7 +6,7 @@
 
 // Init the different game variables
 var Game = {};
-Game.robot_count = 10000;
+Game.robot_count = 1;
 Game.robot_factor_build = 1;
 Game.build_sec_factories = 1;
 Game.slots = {"slot_1": 1};
@@ -19,8 +19,8 @@ var robot_count_block = document.querySelector('.robot-count-content');
 
 // --- Static values @TODO: Should it stay as is or in a new json file ?
 // Costs using robots (first robot type)
-var costs = {"factory_0": 10000, "factory_1": 300, "factory_2": 1500, "factory_3": 5000,
-             "upgrade_robot": 10, "upgrade_next_robot": 3000};
+var costs = {"factory_0": 5000, "factory_1": 600, "factory_2": 1500, "factory_3": 5000,
+             "upgrade_robot": 10, "upgrade_next_robot": 700};
 // Number of robots per factory level
 var factor_factory_level = {"factory_-1": 0, "factory_0": 0, "factory_1": 1, "factory_2": 5, "factory_3": 10};
 
@@ -81,12 +81,15 @@ function affordable() {
         table.style.border = '';
     });
     for (let i=0; i<4; i++) {
-        if (Game.robot_count >= price_factory(i)) {
-            console.log(price_factory(i));
-            console.log(document.querySelectorAll('.town table[data-level="' + (i - 1) + '"]').length);
+        if (can_afford_factory(i)) {
             document.querySelectorAll('.town table[data-level="' + (i - 1) + '"]').forEach(function (table) {
-                console.log(table);
-                table.style.border = '1px solid yellow';
+                if (Game.slots[table.getAttribute('data-slot')] === undefined && i === 0)
+                        table.style.border = '1px solid yellow';
+
+                else if (Game.slots[table.getAttribute('data-slot')] !== undefined) {
+                    if (can_evolve_factory(table.getAttribute('data-slot'), i))
+                        table.style.border = '1px solid yellow';
+                }
             });
         }
     }
@@ -149,6 +152,7 @@ function can_afford_next_robot(level) {
 
 /**
  * Check if the user can upgrade a factory
+ * Has the requested conditions
  *
  * @param   slot        the slot to check
  * @param   lvlRequest  the level wanted (usually slot level + 1)
@@ -156,6 +160,19 @@ function can_afford_next_robot(level) {
  */
 function can_evolve_factory(slot, lvlRequest) {
     var current_level = Game.slots[slot];
+    // Min robot level = 20
+    if (lvlRequest === 0)
+        if (!Game.robot_level > 49)
+            return false;
+
+    if (lvlRequest === 2)
+        if (!Game.robot_level > 19)
+            return false;
+
+    if (lvlRequest === 3)
+        if (!Game.robot_level > 39)
+            return false;
+
     return (lvlRequest > current_level && lvlRequest - current_level === 1);
 }
 
@@ -194,17 +211,17 @@ function pay_robot(level) {
 
 /**
  * The automatic robot build function
- * for the sake of display, this function is called every 100ms
- * which means that the rps must be divided by 10
+ * for the sake of display, this function is called every 10ms
+ * which means that the rps must be divided by 100
  *
  */
 function auto_build() {
-    Game.robot_count += parseFloat(Game.build_sec_factories/1000 * (1+Game.robot_upgrade_level*0.75) * Game.robot_factor_build);
+    Game.robot_count += parseFloat(Game.build_sec_factories/100 * (1+Game.robot_upgrade_level*0.75) * Game.robot_factor_build);
     update_clicker();
 }
 
 update_build_sec_factories(); // Init the rps
-setInterval(auto_build, 10); // auto build every 1 ms
+setInterval(auto_build, 10); // auto build every 10 ms
 setInterval(affordable, 2000); // check affordable stuff but not every 1 ms ...
 
 
